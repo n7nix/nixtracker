@@ -1,0 +1,56 @@
+===== Socket notes =====
+  * aprsis (aprs-is.c) STREAM
+  * display/ui socket
+    either AF_INET or AF_UNIX
+  * tnc socket 
+    rx -> AF_INET SOCK_PACKET
+    tx -> AF_AX25 SOCK_DGRAM (for aprs beacons & messages)
+
+===== Config notes =====
+
+A console packet spy (aprs-spy)  similar to listen is built as part of standard build.
+
+
+===== gps notes =====
+
+The aprs program now supports gpsd 10/4/2014
+
+You need to config the serial/USB port used by gpsd in the .ini file.
+This is the same serial port that would be used for the serial/usb
+NMEA mode.
+
+The 3 types of gps devices supported by the aprs program are:
+
+static - fake, ie. no gps is installed
+serial - for gps usb/serial devices using NMEA-0183 standard
+gpsd - for the gpsd daemon using gps binary.
+
+When running gpsd and the aprs program and you see this message
+displayed:
+
+"Clearing overrun buffer"
+
+It probably means the aprs program is configured to use gps NMEA
+sentences and the GPS device is outputting binary data.
+
+NMEA sentences is the default GPS mouse mode. The serial interface
+that is used to handle NMEA sentences uses a 32 byte buffer where as
+socket interface used by gpsd outputs much more data than the size of
+this buffer and over runs the NMEA parse buffer. gpsd defaults to
+configuring the gps mouse in binary mode.
+
+The GlobalSat BU-353-S4 I purchased from Radio Shack works well in
+serial NMEA mode & NOT at all with gpsd in binary mode.
+
+See this link for Gary Miller's recommendation ""DO NOT EVER BUY ONE"
+http://www.catb.org/gpsd/hardware.html
+
+Regardless of the recommendation this gps mouse is the best working
+device I currently use in my truck when aprs is config'ed to use NMEA
+sentences.
+
+The gps mouse Byonics GPS2 purchased for the Tiny Trak 4 works well
+with either the serial port in NMEA mode or gpsd in binary mode.
+Switching this gps device between the 2 modes is problematic since
+once gpsd is installed it restarts when ever the usb serial device is
+unplugged/plugged into an USB hub.

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      .renderjson a { text-decoration: none; }
+      .renderjson .disclosure { color: crimson;
+                                font-size: 150%; }
+      .renderjson .syntax { color: grey; }
+      .renderjson .string { color: darkred; }
+      .renderjson .number { color: darkcyan; }
+      .renderjson .boolean { color: blueviolet; }
+      .renderjson .key    { color: darkblue; }
+      .renderjson .keyword { color: blue; }
+      .renderjson .object.syntax { color: lightseagreen; }
+      .renderjson .array.syntax  { color: orange; }
+        #status { width:150px; display:block; float:left; margin-top:15px; }
+        #input { border-radius:2px; border:1px solid #ccc;
+                 margin-top:10px; padding:5px; width:200px;  }
+	#debugwin { padding:5px; background:#ddd; border-radius:5px;
+                   border:1px solid #CCC; margin-top:25px; }
+      
+    </style>
+    <title>Config Server</title>
+  </head>
+  <body>
+
+  <div >
+     <span id="status">Connecting...</span>
+     <input type="text" id="input" disabled="disabled" />
+    <span style="margin-left:10px; margin-right:35px; height: 50px;">
+       <button id="outboxBtn" name="outboxBtn" type="submit"
+            style="height: 35px; width: 65px"
+            value="Send_start">Get Cfg</button>
+    </span>
+  </div>
+    <div id="debugwin" name="debugwin" title="Debug Window"
+      style="border: 1px solid black;background-color: white; font: Helvetica 12pt;">
+       <h5>Debug</h5>
+    </div>
+
+  <div id="test">
+
+     <script type="text/javascript" src="renderjson.js"></script>
+     <script type="text/javascript" src="jQuery/jquery.js"></script>
+     <script type="text/javascript" src="cfg-frontend.js"></script>
+
+  </body>
+</html>
+

@@ -1,0 +1,3 @@
+screen ./aprs-ax25 -c aprsdemo.ini
+screen ./aprs -c aprsdemo.ini
+screen /usr/local/bin/node spy-server.js aprsdemo.ini

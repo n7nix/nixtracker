@@ -1,0 +1,4 @@
+screen ./aprs -c aprslive.ini
+screen /usr/local/bin/node tracker-server.js aprslive.ini
+screen ./aprs-ax25 -c spylive.ini
+screen /usr/local/bin/node spy-server.js

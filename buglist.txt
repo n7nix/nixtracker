@@ -1,0 +1,14 @@
+Sept. 10, 2017
+- Why doesn't digi bar graph reset with radio off?
+- Need to indicate when msg has been acked.
+- Parse encap packets
+- What does 'Retry' display
+- via direct why display my packets
+- Take out call sign set from debug display
+- Display count of times msg sent b4 ack
+- With 0 sats reporting ie. dev with GPS plugged in history displays
+some reasonable distance followed immediately by 7692 miles
+
+Fixed
+-----
+- Fix time display from GPS (fixed 9/24/2017)

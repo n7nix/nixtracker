@@ -1,0 +1,101 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          tracker
+# Required-Start:    ax25 $local_fs $remote_fs $syslog
+# Required-Stop:     ax25 $local_fs $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start/stop APRS tracker
+### END INIT INFO
+
+# set -e
+DAEMON=/etc/tracker/tracker-up
+DAEMONHALT=/etc/tracker/tracker-down
+DESC=tracker
+NAME=tracker
+
+# /etc/init.d/tracker
+#
+# Kernel-Parameter "tracker=yes|no" ?
+# Set in kernel bootargs
+
+     StartTracker="yes"
+      if [ "`grep -e [Tt][Rr][Aa][Cc][Kk]=[Nn][Oo] /proc/cmdline`" != "" ] ; then
+          StartTracker="no"
+      fi
+
+case "$1" in
+    start)
+	if [ "$StartTracker" = "no" ]; then
+	    echo -e "tracker: Aborting startup on user request (kernel boot parameter)."
+	    exit 1
+	fi
+
+	echo "Starting $DESC: "
+	$DAEMON
+
+# start the led blinking for Raspberry Pi
+        echo heartbeat > /sys/class/leds/led0/trigger
+#	echo "heartbeat" > /sys/class/leds/tiger\:green\:health/trigger
+
+#	start-stop-daemon --start --quiet -o --exec $DAEMON 2&>/dev/null
+#	start-stop-daemon --start  -o --exec $DAEMON 2&1
+#	echo "$NAME."
+	;;
+
+    stop)
+	echo -n "Stopping $DESC: "
+	$DAEMONHALT
+#	echo "$NAME."
+# stop the led from blinking for Raspberry Pi
+	echo mmc0 > /sys/class/leds/led0/trigger
+#	echo "default-on" > /sys/class/leds/tiger\:green\:health/trigger
+	;;
+
+    restart|force-reload)
+	echo -n "Restarting $DESC: "
+	$DAEMONHALT
+	sleep 1
+	$DAEMON
+	;;
+
+    status)
+        if [ ! -d /proc/sys/net/ax25 ] ; then
+            echo "AX.25 stack is down"
+        else
+            echo "AX.25 stack is running"
+        fi
+
+        screensup=$(screen -ls)
+
+        retcode=$(echo $screensup | grep -i "tracker")
+        if [ $? -ne 0 ]; then
+            echo "screen for tracker NOT FOUND"
+            echo "$screensup"
+        else
+            echo "screen for tracker running"
+        fi
+
+#        retcode=$(echo $screensup | grep -i "spy")
+#        if [ $? -ne 0 ]; then
+#            echo "screen for spy NOT FOUND"
+#            echo "$screensup"
+#        else
+#            echo "screen for spy running"
+#        fi
+
+        echo "PID of running aprs $(pidof aprs)"
+        echo "PID of running aprs-ax25 $(pidof aprs-ax25)"
+        nodepids=$(pidof /usr/local/bin/node)
+        for pid in $nodepids; do
+            echo "PID of node $(ps -p $pid -o comm=) $pid"
+        done
+        ;;
+    *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|status}"
+	exit 1
+	;;
+esac
+
+exit 0

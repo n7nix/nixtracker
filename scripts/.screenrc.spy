@@ -1,0 +1,2 @@
+screen sh -c '/usr/local/bin/aprs-ax25 -c /etc/tracker/aprs_spy.ini; exec bash'
+screen sh -c '/usr/local/bin/node /usr/share/dantracker/spy-server.js /etc/tracker/aprs_spy.ini; exec bash'

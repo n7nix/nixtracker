@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <title>APRS tracker</title>
+        <link href="styles.css" rel="stylesheet" type="text/css">
+    </head>
+
+<body>
+<div id="wrapper">
+  <h1>Creating jQuery Plugin Acid Tabs</h1>
+    <div id="tabContainer">
+      <div class="tabs">
+        <ul>
+          <li id="tabHeader_1">APRS</li>
+          <li id="tabHeader_2">MSG</li>
+          <li id="tabHeader_3">MAIL</li>
+          <li id="tabHeader_4">CTRL</li>
+          </ul>
+      </div>
+
+<div class="tabscontent">
+  <div class="tabpage" id="tabpage_1">
+
+    <div  id="aprscurrent" title="Current Packet" style="overflow: hidden;">
+       <div style="float: left; width:350px;" id="aprswin1">
+       </div>
+       <div> <canvas id="canwin1" style="float: right;
+       width:125px; height:80px;">
+          </canvas>
+       </div>
+    </div>
+
+    <div  id="history" title="Packet History" style="overflow: hidden;">
+       <div style="float: left; width:237px;"
+               id="histwin2_1">
+       </div>
+       <div style="float: right; width:237px;"
+               id="histwin2_2">
+       </div>
+    </div>
+
+    <div id="gpswin" title="GPS Window"
+      style="overflow: hidden; border:2px solid black;" >
+       <div style="float: left; width:350px;" id="gpswin1">
+       </div>
+       <div> <canvas id="gpswin2" style="float: right;
+       width:125px; height:85px;">
+          </canvas>
+       </div>
+    </div>
+
+    <div  id="aprsWx" title="Last Weather Packet"
+       style="overflow: hidden;">
+
+       <div style="float: left; width:350px;" id="aprsweather">
+       </div>
+       <div> <canvas id="canwin2" style="float: right;
+       width:125px; height:80px;">
+          </canvas>
+       </div>
+    </div>
+
+    <div id="aprsstats" name="statwin1" title="Statistics Window"
+      style="border: 1px solid black; font: Helvetica 12pt;">
+
+       <table border="0" cellspacing=3 cellpadding="3" width="100%">
+          <TR>
+             <TD>Recv</TD>
+             <TD>Xmit</TD>
+             <TD>Retry</TD>
+             <TD>Messages</TD>
+             <TD>Weather</TD>
+             <TD>Encap Pkts</TD>
+             <TD>Error</TD>
+          </TR>
+          <TR>
+             <TD id="stats_recv">10</TD>
+             <TD id="stats_xmit">9</TD>
+             <TD id="stats_retry">0</TD>
+             <TD id="stats_msgcount">2</TD>
+             <TD id="stats_wxcount">5</TD>
+             <TD id="stats_encapcount">3</TD>
+             <TD id=stats_errorcount>1</TD>
+          </TR>
+       </table>
+    </div>
+  </div>
+
+    <div class="tabpage" id="tabpage_2">
+
+    <div id="messages" title="Message Window"
+     style="border:2px solid black; overflow-x:hidden; overflow-y:scroll; height: 250px;">
+    </div>
+
+    <div style="padding:10px;">
+       <span style="padding:5px; margin-right:5px;" >ACK </span>
+       <input type="checkbox" name="msg_ack_check"
+		id="msgack_checkbox" checked="checked"></input>
+
+       <span style="padding:5px; margin-left:25px;">From callsign:</span>
+       <input size="8" type="text" id="callsign_from" disabled="disabled"</input>
+
+       <span style="padding:5px; margin-left:30px;">To callsign:</span>
+       <input size="9" type="text" id="callsign_to" disabled="disabled" />
+    </div>
+        <div>
+          <span id="msgstatus">Connecting...</span>
+          <input type="text" id="msginput" disabled="disabled" />
+       </div>
+
+       <div id="aprsdebugwin2"  name="DebugWindow 2" title="Debug Window 2"
+         style="border: 2px solid black; overflow-x:hidden;overflow-y:scroll; height: 80px">
+          <h5>Debug2</h5>
+       </div>
+    </div>
+
+    <div class="tabpage" id="tabpage_3">
+
+    <div style="background-color: white;overflow-x:hidden;overflow-y:hidden; margin-top:20px; height: 50px; "
+            id="ctrlwin_btns" >
+       <span style="margin-left:10px; margin-right:38px; height: 50px;">
+          <button id="outboxBtn" name="outboxBtn" type="submit"
+            style="height: 40px; width: 65px; "
+            value="Send_start">Outbox</button>
+       </span>
+       <span style="margin-right:40px;">
+          <button id="sendTelnetBtn" name="sendTelenet" type="submit"
+            style="height: 38px; width: 60px"
+            value="Send_telnet">Telnet</button>
+       </span>
+       <span style="margin-right:40px;">
+          <button id="sendAX25Btn" name="sendAX25" type="submit"
+            style="height: 35px; width: 60px"
+            value="Send_ax25">AX.25</button>
+       </span>
+       <span style="margin-right:50px;">
+          <button id="sendSerialBtn" name="sendSerial" type="submit"
+            style="height: 35px; width: 60px"
+            value="Send_serial">Serial</button>
+       </span>
+       <span>
+           <button id="sendCancelBtn" name="sendCancel" type="submit"
+            style="height: 35px; width: 65px"
+            value="Send_kill">Cancel</button>
+       </span>
+    </div>
+
+    <div style="background-color: white;overflow-x:hidden;overflow-y:hidden; margin-top:30px; height: 50px; "
+            id="arg_input">
+       <span id="wl2kargs" style="padding:5px;"><b>Path:</b></span>
+       <input type="text" id="wl2kargsin" style="width:250px" />
+
+       <button id="sendMheardBtn" name="sendMheard" type="submit"
+            style="height: 35px; width: 65px; margin-left:50px;"
+            value="Send_mheard">mHeard</button>
+
+    </div>
+
+    <div style="white-space:pre-wrap; border:2px solid black;overflow-x:hidden;overflow-y:scroll; height: 350px"
+            id="wl2kwin">
+    </div>
+
+    <div >
+       <span id="mailstatus" style="width:120px";>Connecting...</span>
+       <input type="text" id="mailinput" style="width:250px" disabled="disabled" />
+    </div>
+ </div>
+
+ <div class="tabpage" id="tabpage_4">
+
+    <div id="sysctrl" name="sys_ctrl" title="System Control Window"
+      style="border: 1px solid black; font: Helvetica 12pt;">
+       <span style="padding:5px; margin-right:5px;" ></span>
+       <input type="button" value="Shutdown" name="shut_down_board"
+                id="shutdown_button" style="height: 25px; width:
+                100px"></input>
+
+      <span style="padding:5px; margin-right:5px;" ></span>
+      <input type="button" value="Reset" name="reset_board"
+             id="reset_button" style="height: 25px; width:
+             100px"></input>
+
+     <span style="padding:5px; margin-left:40px;">Confirm:</span>
+     <input type="text" id="confirm_action" size="8" disabled="disabled" />
+  </div>
+</div>
+   <div id="debugwin" name="DebugWindow 1" title="Debug Window 1"
+     style="border: 1px solid black; font: Helvetica 12pt;
+        overflow-x:hidden;overflow-y:scroll; height: 80px">
+      <h5>Debug</h5>
+      <p>This paragraph would be your content paragraph...</p>
+      <p>Here's another content article right here.</p>
+   </div>
+</div>
+<script src="jQuery/jquery.js"></script>
+<script src="tracker-frontend.js"></script>
+<script src="plu-frontend.js"></script>
+<script src="acidTabs.js"></script>
+<script>
+$(document).ready(function(){
+   $("#tabContainer").acidTabs();
+ });
+</script>
+</body>
+</html>

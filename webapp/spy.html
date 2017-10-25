@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Spy</title>
+
+        <style>
+        * { font-family:tahoma; font-size:12px; padding:0px; margin:0px; }
+        p { line-height:18px; }
+        div { width:800px; margin-left:auto; margin-right:auto;}
+        div.spy { font-family: monospace; font-size:10px}
+        #input { border-radius:2px; border:1px solid #ccc;
+                 margin-top:10px; padding:5px; width:400px;  }
+        #status { width:100px; display:block; float:left; margin-top:15px; }
+	#spywin { font-family: monospace; padding:5px; background:#ff0000;
+		    border: 2px solid black; margin-top:10px; }
+
+        #debugwin { padding:5px; background:#ddd; border-radius:5px;
+                   border:1px solid #CCC; margin-top:10px; }
+	#horizwrapper {   margin: 0 auto ; width: 500px;
+	}
+.post
+{
+    float: left;
+    width: 200px;
+    margin-left: 10px;
+}
+
+.clear-both {
+   clear: both;
+}        </style>
+
+    </head>
+    <body>
+    <div style="background-color: Aquamarine;overflow-x:hidden;overflow-y:scroll; height: 400px"
+	    id="spywin">
+    </div>
+
+       <div >
+          <span id="status">Connecting...</span>
+          <input type="text" id="input" disabled="disabled" />
+       <span style="margin-left:20px;">Packet Counter: </span>
+       <span id="packet_counter">
+       value</span>
+
+       </div>
+    <div id="debugwin" name="DebugWin" title="Example Div Element 1"
+      style="border: 1px solid black;background-color: white; font: Helvetica 12pt;">
+       <h5>Debug</h5>
+    </div>
+
+    <script src="jQuery/jquery.js"></script>
+    <script src="spy-frontend.js"></script>
+    </body>
+</html>

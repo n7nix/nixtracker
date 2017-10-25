@@ -1,0 +1,52 @@
+  * In trying to keep the UI clean, would it be possible to add 
+"arrows" or something like that to see previously heard stations, and WX 
+stations?
+
+  * Would it be possible that if I click on a previously heard station, 
+it could re-render it in the top "heard station" so I can read it's 
+beacon message, etc?
+
+  *  In the previously heard stations, some callsigns show a timer since 
+last heard but that creates quite a bit of client/server traffic.  I 
+don't know if that's worth keeping.
+
+  * In the GPS section of the UI, maybe it would be better to show a 
+GPS satellite constellation icon (similar to xgps) instead of a classic 
+cell bar icon
+
+  * In the WX section, would it be possible to display the other 
+received data like rain, etc?
+
+  * beyond just Git pulls, are you planning on making some official 
+releases in .tgz form, etc? [Debian Package]
+
+  * In the 8081:spy.html view, would it be possible to show packets I send?
+
+  * One thing I'd really like to see is that the APRS messages window 
+be persistent across HTML reloads. Log messages to a file.
+
+-------
+Given URL: http://10.0.39.99:57331/
+
+webpage displays
+{"webSocketPort":"9124"}
+
+Solution:
+
+need URL: http://10.0.39.99:57331/nodeUI
+
+--------
+
+  * When displaying composed APRS message, display the destination address.
+
+  * Show if that message was ACKed or how many retries are left on
+this outgoing message to get an ACK?
+ When sending messages, display a line when the ACK is received for a given 
+message in the MSG window
+
+  * Mapping support where locally cached OpenStreetMaps can be
+displayed and icons placed on it.
+
+  *  aprs uses obsolete (PF_INET,SOCK_PACKET) FIXED
+
+  * msg tab is not rendered properly in FireFox 

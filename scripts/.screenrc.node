@@ -1,0 +1,5 @@
+defscrollback 2000
+#screen -t nodeUI sh -c '/usr/local/bin/node /home/gunn/dev/file-server /home/gunn/dev/nodeUI.ini; exec bash'
+screen -t nodeUI /bin/bash -c 'ulimit -s 65500; /usr/local/bin/node --stack-size=65500 /home/gunn/dev/file-server /home/gunn/dev/nodeUI.ini; exec bash'
+screen -t aprs /bin/bash -c './aprs -c aprs_tracker.ini; exec bash'
+screen -t log sh -c 'tail -f /tmp/aprs_tracker.log; exec bash'

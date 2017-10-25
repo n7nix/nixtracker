@@ -1,0 +1,54 @@
+--- ./libfap-1.5.orig/src/fap.c	2015-01-31 04:33:25.000000000 -0800
++++ ./libfap-1.5/src/fap.c	2015-05-24 08:24:09.378293178 -0700
+@@ -165,9 +165,10 @@
+ 	}
+ 	
+ 	/* Save the original packet. */
+-	result->orig_packet = malloc(input_len);
++	result->orig_packet = malloc(input_len+1);
+ 	result->orig_packet_len = input_len;
+ 	memcpy(result->orig_packet, input, input_len);
++	*(result->orig_packet+input_len) = '\0';
+ 	
+ 	/* Find the end of header checking for NULL bytes while doing it. */
+ 	splitpos = 0;
+@@ -455,6 +456,9 @@
+ 	else if ( typechar == '}' )
+ 	{
+ 		/* Come here to avoid the "when all else fails" option. */
++		result->type = malloc(sizeof(fap_packet_type_t));
++		if ( !result->type ) return result;
++		*result->type = fapTHIRD_PARTY;
+ 	}
+ 	/* When all else fails, try to look for a !-position that can occur
+ 	   anywhere within the 40 first characters according to the spec. */
+--- ./libfap-1.5.orig/src/helpers.c	2015-01-31 04:33:25.000000000 -0800
++++ ./libfap-1.5/src/helpers.c	2015-05-24 08:20:49.304718019 -0700
+@@ -620,7 +620,7 @@
+ 	/* If there's something left, create working copy of it. */
+ 	if ( (len = input_len - 8) > 0 )
+ 	{
+-		rest = malloc(len);
++		rest = malloc(len+1);
+ 		memcpy(rest, input+8, len);
+ 	}
+ 	else
+@@ -2549,7 +2549,7 @@
+ 	}
+ 	else
+ 	{
+-		packet->status = malloc(input_len);
++		packet->status = malloc(input_len + 1);
+ 		if ( !packet->status ) return 0;
+ 		memcpy(packet->status, input, input_len);
+ 		packet->status_len = input_len;
+--- ./libfap-1.5.orig/src/fap.h	2015-01-31 04:33:25.000000000 -0800
++++ ./libfap-1.5/src/fap.h	2015-05-24 08:22:46.637639989 -0700
+@@ -158,6 +158,7 @@
+ 	fapTELEMETRY,
+ 	fapTELEMETRY_MESSAGE,
+ 	fapDX_SPOT,
++	fapTHIRD_PARTY,
+ 
+ 	fapEXPERIMENTAL
+ } fap_packet_type_t;
