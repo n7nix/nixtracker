@@ -5,9 +5,9 @@
 $(function () {
         "use strict";
 
-        var WebIpSock="57333";
+        var webSocketPort="57339";
         /* Get server IP */
-        var WebIpAddr = window.location.hostname;
+        var webSocketAddr = window.location.hostname;
 
         // for better performance - to avoid searching in DOM
 
@@ -17,6 +17,7 @@ $(function () {
         var wl2kWin = $('#wl2kwin');
         var debugWin = $('#debugwin');
 	var outboxBtn = $('#outboxBtn');
+	var mheardBtn = $('#mheardBtn');
 
         // maximum number of lines to keep before throwning them away
         var maxWindowItems = 200;
@@ -36,7 +37,7 @@ $(function () {
         }
 
         // open connection
-        var connection = new WebSocket('ws://'+ WebIpAddr+':'+WebIpSock);
+        var connection = new WebSocket('ws://'+ webSocketAddr+':'+webSocketPort);
 
         connection.onopen = function () {
                 mailinput.removeAttr('disabled');
