@@ -15,7 +15,6 @@ var iniparser = require(global_module_dir + 'iniparser');
 /**
  * Global variables
  */
-//var plu_command = "/home/gunn/bin/coretemp.sh";
 var plu_command = "/usr/local/bin/wl2ktelnet";
 var plu_args = '';
 var OUTBOX_DIR='/usr/local/var/wl2k/outbox/';
@@ -33,7 +32,7 @@ var pluClients = [];
 /* *** Web socket server port
  * NOTE: this is also set in plu-frontend.js
  */
-var webSocketPort = 1340;
+var webSocketPort = 57339;
 
 // *** HTML server
 var HTMLPORT = 8083;
@@ -162,7 +161,7 @@ function spawn_command (chillens, connection, progname) {
  */
 
 if(userName == undefined) {
-	userName = "gunn";
+	userName = "pi";
 }
 
 if(groupName == undefined) {
@@ -232,7 +231,6 @@ iniparser.parse(ini_file, function(err, data) {
 		}
 	}
 	console.log("Connections: websocket port: " + webSocketPort);
-
 
 /**
    * HTTP server
@@ -395,6 +393,8 @@ wsServer.on('request', function(request) {
  */
 
 var connect = require(global_module_dir + 'connect');
+
+/* For connect@2.x ONLY, Does not work with connect@3.x
 connect.createServer(
                      connect.static(__dirname),
                      function(req, res){
@@ -402,6 +402,19 @@ connect.createServer(
         res.end('You need a path, try /plu.html\n');
 }
 ).listen(HTMLPORT);
-console.log('HTML Server listening on port: ' + HTMLPORT);
+*/
+
+var serveStatic = require(global_module_dir + 'serve-static');
+var finalhandler = require(global_module_dir + 'finalhandler');
+
+var app = connect();
+var serve = serveStatic(__dirname, {'index': ['plu.html']})
+	    // Create server
+	    var server = http.createServer(function(req, res) {
+		    var done = finalhandler(req, res)
+			       serve(req, res, done)
+	    }).listen(HTMLPORT);
+
+            console.log('HTML Server listening on port: ' + HTMLPORT);
 
 }); /* End - iniparser wrapper */
