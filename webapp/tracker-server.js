@@ -216,7 +216,6 @@ function originIsAllowed(origin) {
 wsClients.push(wsServer);
 
 wsServer.on('error', function (exc) {
-	sys.log("websocket server: ignoring exception: " + exc);
 	console.log("websocket server: ignoring exception: " + exc);
 });
 
@@ -355,7 +354,6 @@ wsServer.on('request', function(request) {
 
 	}); //connection on close
 	connection.on('error', function (exc) {
-		sys.log("websocket connection: ignoring exception: " + exc);
 		console.log("websocket connection: ignoring exception: " + exc);
 	});
 
