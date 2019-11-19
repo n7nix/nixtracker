@@ -30,6 +30,20 @@
 #include "aprs-ax25.h"
 #include "aprs-msg.h"
 
+/* #define DEBUG_GPS 1 */
+
+/* For USB serial port GPS devices */
+/* #define NMEA_PREFIX "$GP" */
+
+/* for NW Digital Radio DRAWS GPS */
+#define NMEA_PREFIX "$GN"
+#define NMEA_GGA "GGA"
+#define NMEA_RMC "RMC"
+#define NMEA_GSA "GSA"
+const char *nmea_gga=NMEA_PREFIX NMEA_GGA;
+const char *nmea_rmc=NMEA_PREFIX NMEA_RMC;
+const char *nmea_gsa=NMEA_PREFIX NMEA_GSA;
+
 extern char *__progname;
 extern const char *getprogname(void);
 time_t convrt_gps_to_epoch(struct state *state);
@@ -1212,7 +1226,7 @@ int handle_incoming_packet(struct state *state)
 
 int parse_gps_nmea_string(struct state *state)
 {
-        char *str = state->gps_buffer;
+        char *str = &state->gps_buffer[state->gps_idx];
 
         if (*str == '\n')
                 str++;
@@ -1220,9 +1234,29 @@ int parse_gps_nmea_string(struct state *state)
         if (!valid_checksum(str))
                 return 0;
 
-        if (strncmp(str, "$GPGGA", 6) == 0) {
+        if (strncmp(str, nmea_gga, 6) == 0) {
                 return parse_gga(MYPOS(state), str);
-        } else if (strncmp(str, "$GPRMC", 6) == 0) {
+        } else if (strncmp(str, nmea_rmc, 6) == 0) {
+                state->mypos_idx = (state->mypos_idx + 1) % KEEP_POSITS;
+                return parse_rmc(MYPOS(state), str);
+        }
+
+        return 0;
+}
+int parse_gpsd_nmea_string(struct state *state)
+{
+        char *str = &state->gps_buffer[state->gps_idx];
+
+#if 0
+        printf("debug (%d) gpsd_nmea_string: >%s<\n", strlen(str), str);
+#endif
+
+        if (*str == '\n') {
+                str++;
+        }
+        if (strncmp(str, nmea_gga, 6) == 0) {
+                return parse_gga(MYPOS(state), str);
+        } else if (strncmp(str, nmea_rmc, 6) == 0) {
                 state->mypos_idx = (state->mypos_idx + 1) % KEEP_POSITS;
                 return parse_rmc(MYPOS(state), str);
         }
@@ -1431,11 +1465,15 @@ int set_time(struct state *state)
         return 0;
 }
 
+#define GPS_JSON_RESPONSE_MAX	4096
 int handle_gps_data(struct state *state)
 {
         char buf[33];
         int ret;
         char *cr;
+        /* buffer to hold one JSON message */
+        char message[GPS_JSON_RESPONSE_MAX];
+
 
         switch(state->conf.gps_type_int) {
 
@@ -1469,97 +1507,59 @@ int handle_gps_data(struct state *state)
                         }
 
                         break;
-                /* GPSD gets data in a binary format */
-                case GPS_TYPE_GPSD:
+                case GPS_TYPE_GPSD:   /* GPSD gets data in a format dependent on flags */
+
                 {
 #ifdef HAVE_GPSD_LIB
-                        struct posit *mypos;
+                        int gpsdata_cnt;
                         struct gps_data_t *pgpsd= &state->gpsdata;
-                        time_t curtime;
 
 
-                        if (gps_read(&state->gpsdata) == -1) {
+
+                        /* reading directly from the socket avoids decode overhead */
+                        errno = 0;
+                        if ((gpsdata_cnt = (int)recv(pgpsd->gps_fd, message, sizeof(message), 0)) == -1) {
+                                if (errno == EAGAIN) {
+                                        return 0;
+                                }
                                 fprintf(stderr, "%s: socket error 4", __FUNCTION__);
                                 fprintf(stderr, ", is: %s\n", (errno == 0) ? "GPS_GONE" : "GPS_ERROR");
                                 return -errno;
                         }
-
-                        if(isnan(pgpsd->fix.time) == 0) {
-                                curtime = pgpsd->fix.time;
-                        } else {
-                                curtime = time(NULL);
+#if 0
+                        printf("debug: data cnt: %d ", gpsdata_cnt);
+#endif
+                        if (state->gps_idx + gpsdata_cnt > sizeof(state->gps_buffer)) {
+                                printf("Clearing overrun buffer\n");
+                                state->gps_idx = 0;
                         }
-#ifdef DEBUG_GPS
-                        {
-                                struct tm *loctime;
-                                char timestr[256];
 
-                                loctime = gmtime(&curtime);
-                                strftime(timestr, 256, "%a %b %d %H:%M:%S %Y", loctime);
+                        char *msgptr=message;
+                        if (gpsdata_cnt > 0) {
+                                cr = strchr(msgptr, '\n');
+                                if (cr != NULL) {
+                                        int cnt_gps;
 
-                                printf("%s mode: %d, sat: %d, lat: %f %c, long: %f %c, track: %f, speed: %f, ",
-                                       timestr,
-                                       pgpsd->fix.mode,
-                                       pgpsd->satellites_visible,
-                                       pgpsd->fix.latitude,  (pgpsd->fix.latitude < 0) ? 'S' : 'N',
-                                       pgpsd->fix.longitude,  (pgpsd->fix.longitude < 0) ? 'W' : 'E',
-                                       pgpsd->fix.track,
-                                       pgpsd->fix.speed
-                                      );
-                                if( pgpsd->fix.mode >= 3) {
-                                        printf("alt: %f, climb: %f",
-                                               pgpsd->fix.altitude,
-                                               pgpsd->fix.climb);
+                                        *cr = 0;
+#if 0
+                                        printf(" === found cr: %s, cnt: %d\n",cr+1, gpsdata_cnt);
+#endif
+                                        strcpy(&state->gps_buffer[state->gps_idx], message);
+
+                                        if (parse_gpsd_nmea_string(state))
+                                                state->last_gps_data = time(NULL);
+                                        strcpy(state->gps_buffer, cr+1);
+                                        cnt_gps = strlen(state->gps_buffer);
+                                        state->gps_idx = cnt_gps;
+                                        gpsdata_cnt-= cnt_gps;
+
+                                } else {
+                                        printf("debug no cr\n");
+                                        memcpy(&state->gps_buffer[state->gps_idx], message, gpsdata_cnt);
+                                        state->gps_idx += gpsdata_cnt;
                                 }
-                                printf("\n");
                         }
-#endif /* DEBUG_GPS */
-                        /* Fill in the position struct posit */
-                        state->mypos_idx = (state->mypos_idx + 1) % KEEP_POSITS;
-                        mypos = MYPOS(state);
-                        /* NMEA GPGAA sentence breaks time into 2 items:
-                         * time: hhmmss.xxx (xxx = millisecnds)
-                         * dtime: ddmmyy
-                         *
-                         * binary data has one double containing Unix time in seconds with fractional part
-                         */
-                        mypos->dstamp = 0;
-                        mypos->tstamp = 0;
-                        mypos->epochtime = curtime;
-                        mypos->lat = pgpsd->fix.latitude;
-                        mypos->lon = pgpsd->fix.longitude;
-                        mypos->alt = pgpsd->fix.altitude;
-                        mypos->course = pgpsd->fix.track;
-                        mypos->speed = pgpsd->fix.speed;
-                        /* Map binary mode of gps fix to
-                         * NMEA GPGGA sentence, fix qualitiy
-                         * binary mode of fix defines:
-                         * MODE_NOT_SEEN 0	mode update not seen yet
-                         * MODE_NO_FIX   1	none
-                         * MODE_2D  	 2	good for latitude/longitude
-                         * MODE_3D  	 3	good for altitude/climb too
-                         *
-                         * NMEA GPGGA defines:
-                         * 0 = invalid
-                         * 1 = GPS fix
-                         * 2 = differential GPS fix
-                         */
-                        switch(pgpsd->fix.mode) {
-                                case 0:
-                                case 1:
-                                        mypos->qual = 0;
-                                        break;
-                                case 2:
-                                        mypos->qual = 1;
-                                        break;
-                                case 3:
-                                        mypos->qual = 2;
-                                        break;
-                                default:
-                                        mypos->qual = 0;
-                                        break;
-                        }
-                        mypos->sats = pgpsd->satellites_visible;
+
 #else
                         fprintf(stderr, "%s: gpsd daemon not configured\n", __FUNCTION__);
 #endif /* HAVE_GPSD_LIB */
@@ -2337,6 +2337,7 @@ int fake_gps_data(struct state *state)
 
 int gps_init(struct state *state)
 {
+        int gpsd_flags=WATCH_ENABLE | WATCH_NMEA;
         state->gpsfd = -1;
 
         switch(state->conf.gps_type_int) {
@@ -2362,7 +2363,7 @@ int gps_init(struct state *state)
                                 printf("%s: GPSD\n", __FUNCTION__);
                         }
 
-                        if(gps_open("localhost", "2947", &state->gpsdata)<0){
+                        if(gps_open("localhost", "2947", &state->gpsdata) < 0){
                                 fprintf(stderr,"Could not connect to GPSd\n");
                                 return(-1);
                         }
@@ -2370,13 +2371,16 @@ int gps_init(struct state *state)
                                 fprintf(stderr, "GPS no device specified\n");
                                 return(-1);
                         }
-                        state->gpsfd = state->gpsdata.gps_fd;
 
                         /* register for updates */
-                        if(gps_stream(&state->gpsdata, WATCH_ENABLE | WATCH_DEVICE, state->conf.gps) == -1) {
+                        /* original code which returns satellites_used=0 for DRAWS gps device
+                         *  gps_stream(&state->gpsdata, WATCH_ENABLE | WATCH_DEVICE, state->conf.gps) == -1)
+                         */
+                        if(gps_stream(&state->gpsdata, gpsd_flags, state->conf.gps) == -1) {
                                 perror("gps_stream()");
                                 return(-1);
                         }
+                        state->gpsfd = state->gpsdata.gps_fd;
 #else
                         fprintf(stderr, "%s: gpsd daemon not configured\n", __FUNCTION__);
 #endif /* HAVE_GPSD_LIB */
