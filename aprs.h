@@ -270,7 +270,7 @@ struct state {
 #ifdef HAVE_GPSD_LIB
         struct gps_data_t gpsdata;
 #endif /* HAVE_GPSD_LIB */
-        char gps_buffer[128];
+        char gps_buffer[4096];
         int gps_idx;            /* index into gps_buffer for nmea string capture */
         time_t last_gps_update;
         time_t last_gps_data;
