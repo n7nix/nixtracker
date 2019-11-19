@@ -516,7 +516,7 @@ void handle_ax25_pkt(struct state *state, struct sockaddr *sa, unsigned char *bu
                 ifr.ifr_ifindex = sll->sll_ifindex;
 
                 if(ioctl(state->tncfd, SIOCGIFNAME, &ifr) >= 0) {
-                        strncpy(portname,ifr.ifr_name, sizeof(ifr.ifr_name));
+                        strncpy(portname,ifr.ifr_name, sizeof(portname)-1);
                         ax25packet.port = portname;
                 }
 
