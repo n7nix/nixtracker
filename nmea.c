@@ -105,7 +105,6 @@ int parse_rmc(struct posit *mypos, char *str)
 	int num = 0;
 	char *field = strchr(str, ',');
 
-
 	while (str && field) {
 		*field = 0;
 
