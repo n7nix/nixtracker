@@ -2367,15 +2367,19 @@ int gps_init(struct state *state)
                                 fprintf(stderr,"Could not connect to GPSd\n");
                                 return(-1);
                         }
+                        /* This is not an error condition for gpsd */
                         if (state->conf.gps == NULL) { /* check for a serial device from config */
-                                fprintf(stderr, "GPS no device specified\n");
-                                return(-1);
+                                fprintf(stderr, "GPS no device specified, ok\n");
                         }
 
                         /* register for updates */
-                        /* original code which returns satellites_used=0 for DRAWS gps device
-                         *  gps_stream(&state->gpsdata, WATCH_ENABLE | WATCH_DEVICE, state->conf.gps) == -1)
+                        /* Original code always returned satellites_used=0 for DRAWS gps device
+                         * Now specifying WATCH_NMEA which fixes that problem.
                          */
+                        /* Check for a gps serial port name */
+                        if (state->conf.gps != NULL) {
+                                gpsd_flags |= WATCH_DEVICE;
+                        }
                         if(gps_stream(&state->gpsdata, gpsd_flags, state->conf.gps) == -1) {
                                 perror("gps_stream()");
                                 return(-1);
