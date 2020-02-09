@@ -152,7 +152,7 @@ int parse_opts(int argc, char **argv, struct state *state)
                                 break;
                         case 'V':
                                 show_version();
-                                exit(1);
+                                exit(0);
                         case 'c':
                                 state->conf.config = optarg;
                                 break;
