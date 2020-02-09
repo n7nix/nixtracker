@@ -1,7 +1,7 @@
 // http://ejohn.org/blog/ecmascript-5-strict-mode-json-and-more/
 "use strict";
 
-// Optional. You will see this name in eg. 'ps' or 'top' command
+// Optional. You can see this name displayed in 'ps' or 'top' command
 process.title = 'tracker-server';
 
 var fs = require('fs');
@@ -21,9 +21,6 @@ fs.exists(ini_file, function(exists) {
 
 // Install node modules globally npm -g install <module_name>
 var global_module_dir='/usr/local/lib/node_modules/';
-
-// Optional. You can see this name displayed in 'ps' or 'top' command
-process.title = 'track-server';
 
 var mod_ctype = require(global_module_dir + 'ctype');
 
