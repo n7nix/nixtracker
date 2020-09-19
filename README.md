@@ -1,19 +1,31 @@
-# dantracker
+# nixtracker
 
 [![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/n7nix/dantracker/master)
 
+* This code is a fork of [Dan Smith's dantracker](https://github.com/kk7ds/dantracker)
+
 ### Introduction
 
-[Installation Instructions](https://github.com/n7nix/dantracker/blob/master/INSTALL.md)
+* [Script Installation Instructions](https://github.com/nwdigitalradio/n7nix/blob/master/tracker/README.md)
+* For reference only: [Manual Installation Instructions](https://github.com/n7nix/dantracker/blob/master/INSTALL.md)
 
-* This code is a fork of Dan Smith's dantracker @ https://github.com/kk7ds/dantracker.
-* Some of the differences between this code (n7nix) and the kk7ds code are:
+* Differences between this code (n7nix) and Dan Smith's KK7DS code are:
   * Display runs in a browser using node.js & websockets
-    * kk7ds displays using GTK+
+    * kk7ds version displays using GTK+
   * Adds APRS messaging
+  * Adds Browser interface to paclink-unix for Winlink messaging.
   * Adds shutdown reset control from the app.
-* The server part can run on an RPi (kk7ds can as well)
+* The server part can run on an RPi (kk7ds version can as well)
   * The client part can run on any browser on the network
+
+### Screen shot of current nixtracker operating in a browser
+
+![nixtracker](/images/nixtracker-1366x768.png)
+
+### Photo of current physical setup in back of truck
+
+![nixtracker](/images/img_2638_resize.jpg)
+
 
 ### How to run
 
