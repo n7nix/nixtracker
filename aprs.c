@@ -1040,6 +1040,9 @@ int store_packet(struct state *state, fap_packet_t *fap)
         return 0;
 }
 
+/*
+ * Update third panel
+ */
 int update_mybeacon_status(struct state *state)
 {
         char buf[512];
