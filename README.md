@@ -15,6 +15,7 @@
   * Adds APRS messaging
   * Adds Browser interface to paclink-unix for Winlink messaging.
   * Adds shutdown reset control from the app.
+    * Not needed since I now use [Powerwerx ITS-12 Automotive DC Timer with Low Voltage Disconnect Battery Guard](https://powerwerx.com/automotive-dc-timer-lvd-battery-guard)
 * The server part can run on an RPi (kk7ds version can as well)
   * The client part can run on any browser on the network
 
