@@ -1460,7 +1460,19 @@ int set_time(struct state *state)
          * Only set machine time if difference is greater than 1 second.
          */
         if(abs(gpstime - machinetime) > 2) {
-                stime(&gpstime);
+                /* int stime(const time_t *t) is deprecated, use:
+                 * int clock_settime(clockid_t clockid, const struct timespec *tp);
+                 *  stime(&gpstime);
+                 */
+
+                /* Set the system clock to *WHEN.  */
+                {
+                    struct timespec ts;
+                    ts.tv_sec = gpstime;
+                    ts.tv_nsec = 0;
+
+                    clock_settime (CLOCK_REALTIME, &ts);
+                }
         }
 
         state->last_time_set = time(NULL);
@@ -1468,7 +1480,7 @@ int set_time(struct state *state)
         return 0;
 }
 
-#define GPS_JSON_RESPONSE_MAX	4096
+/* #define GPS_JSON_RESPONSE_MAX	4096 */
 int handle_gps_data(struct state *state)
 {
         char buf[33];
